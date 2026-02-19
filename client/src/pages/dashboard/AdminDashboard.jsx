@@ -156,7 +156,7 @@ const AdminDashboard = () => {
           )}
         </div>
       )}
-
+      {/*  */}
       <div className="bg-white p-6 rounded shadow mt-8">
         <h3 className="text-lg font-bold mb-4">Recent Notes</h3>
 

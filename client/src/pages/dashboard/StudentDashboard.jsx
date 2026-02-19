@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import API from "../../utils/api";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { toast } from "react-toastify";
-const API_URL = import.meta.env.VITE_API_URL;
 
 const StudentDashboard = () => {
   const [user, setUser] = useState(null);
@@ -27,19 +26,21 @@ const StudentDashboard = () => {
 
   const fetchBookmarkCount = async () => {
     try {
-      const res = await axios.get(`${API_URL}/bookmarks/count/${user.id}`);
+      const res = await API.get(`/bookmarks/count/${user.id}`);
       setBookmarkCount(res.data.count);
     } catch (err) {
-      toast.error("❌ Error fetching bookmark count", err);
+      toast.error("❌ Error fetching bookmark count");
+      console.log(err);
     }
   };
 
   const fetchNotes = async () => {
     try {
-      const res = await axios.get(`${API_URL}/notes`);
+      const res = await API.get("/notes");
       setNotes(res.data);
     } catch (err) {
-      toast.error("❌ Error fetching notes", err);
+      toast.error("❌ Error fetching notes");
+      console.log(err);
     } finally {
       setLoading(false);
     }
