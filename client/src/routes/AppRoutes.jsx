@@ -9,6 +9,7 @@ import Notes from "../pages/Notes";
 import ProtectedRoute from "./ProtectedRoute";
 import Bookmarks from "../pages/bookmarks";
 import UploadNote from "../pages/UploadNote";
+import AdminDashboard from "../pages/dashboard/AdminDashboard";
 const AppRoutes = () => {
   return (
     <BrowserRouter>
@@ -60,11 +61,14 @@ const AppRoutes = () => {
           path="/admin/dashboard"
           element={
             <ProtectedRoute allowedRoles={["admin"]}>
-              <div>Admin Dashboard</div>
+              <AdminDashboard />
             </ProtectedRoute>
           }
         />
       </Routes>
+      {/* <Routes>
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+      </Routes> */}
     </BrowserRouter>
   );
 };
