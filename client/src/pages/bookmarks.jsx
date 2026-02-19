@@ -20,7 +20,7 @@ const Bookmarks = () => {
   const fetchBookmarks = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/bookmarks/${user.id}`,
+        `ttps://campus-notes-backend-six.vercel.app/api/bookmarks/${user.id}`,
       );
       setBookmarks(res.data);
     } catch (err) {
@@ -31,10 +31,13 @@ const Bookmarks = () => {
   };
   const removeBookmark = async (noteId) => {
     try {
-      await axios.post("http://localhost:5000/api/bookmarks/toggle", {
-        userId: user.id,
-        noteId,
-      });
+      await axios.post(
+        "ttps://campus-notes-backend-six.vercel.app/api/bookmarks/toggle",
+        {
+          userId: user.id,
+          noteId,
+        },
+      );
 
       // UI update without reload
       setBookmarks((prev) => prev.filter((item) => item.note_id !== noteId));
