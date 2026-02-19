@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { toast } from "react-toastify";
+import API from "../utils/api";
 
 const Bookmarks = () => {
   const user = JSON.parse(localStorage.getItem("campusUser"));
@@ -19,30 +19,25 @@ const Bookmarks = () => {
 
   const fetchBookmarks = async () => {
     try {
-      const res = await axios.get(
-        `ttps://campus-notes-backend-six.vercel.app/api/bookmarks/${user.id}`,
-      );
+      const res = await API.get(`/bookmarks/${user.id}`);
       setBookmarks(res.data);
     } catch (err) {
-      toast.error("❌ Error fetching bookmarks:", err);
+      toast.error("❌ Error fetching bookmarks");
     } finally {
       setLoading(false);
     }
   };
   const removeBookmark = async (noteId) => {
     try {
-      await axios.post(
-        "ttps://campus-notes-backend-six.vercel.app/api/bookmarks/toggle",
-        {
-          userId: user.id,
-          noteId,
-        },
-      );
+      await API.post("/bookmarks/toggle", {
+        userId: user.id,
+        noteId,
+      });
 
       // UI update without reload
       setBookmarks((prev) => prev.filter((item) => item.note_id !== noteId));
     } catch (err) {
-      toast.error("❌ Remove bookmark failed:", err);
+      toast.error("❌ Remove bookmark failed");
     }
   };
 
