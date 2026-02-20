@@ -7,42 +7,14 @@ import API from "../utils/api";
 
 const Profile = () => {
   const user = JSON.parse(localStorage.getItem("campusUser"));
-  const token = localStorage.getItem("token");
-  const [profile, setProfile] = useState({});
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  //
-
-  useEffect(() => {
-    const loadProfile = async () => {
-      try {
-        const res = await API.get(`/users/${user.id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setProfile(res.data);
-        setName(res.data.name);
-        setEmail(res.data.email);
-      } catch (err) {
-        toast.error("Failed to load profile");
-        console.log(err);
-      }
-    };
-    if (user?.id) loadProfile();
-  }, []);
+  const [name, setName] = useState(user?.name || "");
+  const [email, setEmail] = useState(user?.email || "");
 
   const updateProfile = async () => {
     try {
-      await API.put(
-        `/users/${user.id}`,
-        { name, email },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
+      await API.put(`/users/${user.id}`, { name, email });
+      const updatedUser = { ...user, name, email };
+      localStorage.setItem("campusUser", JSON.stringify(updatedUser));
       toast.success("Profile updated");
     } catch (err) {
       toast.error("Failed to update profile");
@@ -58,8 +30,10 @@ const Profile = () => {
           {user.role}
         </p>
         <p>
-          <b>Joined:</b>
-          {new Date(profile.created_at).toLocaleDateString()}
+          <b>Joined:</b>{" "}
+          {user?.created_at
+            ? new Date(user.created_at).toLocaleDateString()
+            : "N/A"}
         </p>
 
         <input
