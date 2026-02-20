@@ -23,6 +23,7 @@ const Bookmarks = () => {
       setBookmarks(res.data);
     } catch (err) {
       toast.error("❌ Error fetching bookmarks");
+      console.log(err);
     } finally {
       setLoading(false);
     }
@@ -38,6 +39,7 @@ const Bookmarks = () => {
       setBookmarks((prev) => prev.filter((item) => item.note_id !== noteId));
     } catch (err) {
       toast.error("❌ Remove bookmark failed");
+      console.log(err);
     }
   };
 
