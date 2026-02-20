@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import axios from "axios";
-
-const API_URL = import.meta.env.VITE_API_URL;
+import API from "../../utils/api";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -32,24 +30,41 @@ const Login = () => {
   const handleForm = async (e) => {
     e.preventDefault();
     setError("");
+    console.log("Login attempt started");
+    console.log(" Email:", email);
+    console.log("Password:", password ? "***" : "empty");
     try {
       setLoading(true);
-      const res = await axios.post(`${API_URL}/auth/login`, {
+      console.log("🌐 API URL:", API.defaults.baseURL);
+      const res = await API.post("/auth/login", {
         email,
         password,
       });
 
+      console.log(" Response received:", res);
+      console.log(" Response data:", res.data);
+      console.log(" User data:", res.data.user);
+      console.log(" User role:", res.data.user?.role);
+
       const { user, token } = res.data;
+      console.log("Saved to localStorage");
+      console.log("Token:", token);
+
       localStorage.setItem("campusUser", JSON.stringify(user));
       localStorage.setItem("token", token);
 
       toast.success("Login Successful");
       redirectByRole(user.role);
     } catch (err) {
+      console.error(" Login error:", err);
+      console.error(" Error response:", err?.response);
+      console.error(" Error data:", err?.response?.data);
+      console.error(" Error message:", err?.message);
       setError(err?.response?.data?.error || "Login Failed");
-      toast.error("Login Failed");
+      toast.error("Login Failed", err);
     } finally {
       setLoading(false);
+      console.log(" Login attempt finished");
     }
   };
 
