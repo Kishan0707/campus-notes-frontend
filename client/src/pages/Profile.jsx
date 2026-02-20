@@ -1,24 +1,17 @@
 import React from "react";
 import DashboardLayout from "../layouts/DashboardLayout";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "react-toastify";
-import API from "../utils/api";
-// import axios from "axios";
 
 const Profile = () => {
   const user = JSON.parse(localStorage.getItem("campusUser"));
   const [name, setName] = useState(user?.name || "");
   const [email, setEmail] = useState(user?.email || "");
 
-  const updateProfile = async () => {
-    try {
-      await API.put(`/users/${user.id}`, { name, email });
-      const updatedUser = { ...user, name, email };
-      localStorage.setItem("campusUser", JSON.stringify(updatedUser));
-      toast.success("Profile updated");
-    } catch (err) {
-      toast.error("Failed to update profile");
-    }
+  const updateProfile = () => {
+    const updatedUser = { ...user, name, email };
+    localStorage.setItem("campusUser", JSON.stringify(updatedUser));
+    toast.success("Profile updated");
   };
 
   return (
