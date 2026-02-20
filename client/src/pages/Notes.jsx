@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { toast } from "react-toastify";
 
-import API from "../../utils/api";
+import API from "../utils/api";
 
 const Notes = () => {
   const [notes, setNotes] = useState([]);

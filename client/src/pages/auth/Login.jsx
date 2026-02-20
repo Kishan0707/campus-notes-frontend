@@ -1,10 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import { toast } from "react-toastify";
-import API from "../../utils/api";
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Login = () => {
   const navigate = useNavigate();
+  useEffect(() => {
+    const user = localStorage.getItem("campusUser");
+    const userData = JSON.parse(user);
+    if (user) {
+      if (userData.role === "admin") {
+        navigate("/admin/dashboard");
+      } else if (userData.role === "teacher") {
+        navigate("/teacher/dashboard");
+      } else {
+        navigate("/dashboard");
+      }
+    }
+
+    if (!user) navigate("/");
+  }, []);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -12,115 +28,103 @@ const Login = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // 🔹 Auto redirect if already logged in
-  useEffect(() => {
-    const user = localStorage.getItem("campusUser");
-    if (user) {
-      const parsed = JSON.parse(user);
-      redirectByRole(parsed.role);
-    }
-  }, []);
-
-  const redirectByRole = (role) => {
-    if (role === "admin") navigate("/admin/dashboard");
-    else if (role === "teacher") navigate("/teacher/dashboard");
-    else navigate("/dashboard");
-  };
-
   const handleForm = async (e) => {
     e.preventDefault();
-    setError("");
-    console.log("Login attempt started");
-    console.log(" Email:", email);
-    console.log("Password:", password ? "***" : "empty");
     try {
       setLoading(true);
-      console.log("🌐 API URL:", API.defaults.baseURL);
-      const res = await API.post("/auth/login", {
+      const res = await axios.post(`${API_URL}/auth/login`, {
         email,
         password,
       });
 
-      console.log(" Response received:", res);
-      console.log(" Response data:", res.data);
-      console.log(" User data:", res.data.user);
-      console.log(" User role:", res.data.user?.role);
-
-      const { user, token } = res.data;
-      console.log("Saved to localStorage");
-      console.log("Token:", token);
+      const user = res.data.user;
 
       localStorage.setItem("campusUser", JSON.stringify(user));
-      localStorage.setItem("token", token);
-
-      toast.success("Login Successful");
-      redirectByRole(user.role);
+      if (user.role === "admin") {
+        toast.success("Login Successfull");
+        navigate("/admin/dashboard");
+      } else if (user.role === "teacher") {
+        toast.success("Login Successfull");
+        navigate("/teacher/dashboard");
+      } else {
+        toast.success("Login Successfull");
+        navigate("/dashboard");
+      }
     } catch (err) {
-      console.error(" Login error:", err);
-      console.error(" Error response:", err?.response);
-      console.error(" Error data:", err?.response?.data);
-      console.error(" Error message:", err?.message);
       setError(err?.response?.data?.error || "Login Failed");
-      toast.error("Login Failed", err);
+      toast.error("Login Failed");
     } finally {
       setLoading(false);
-      console.log(" Login attempt finished");
     }
   };
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
-      <form
-        onSubmit={handleForm}
-        className="bg-white w-full max-w-md p-8 rounded shadow"
-      >
-        <h2 className="text-2xl font-bold text-center mb-6">
-          Campus Notes Login
-        </h2>
-
-        {error && (
-          <p className="bg-red-100 text-red-600 p-2 rounded mb-4">{error}</p>
-        )}
-
-        <input
-          type="email"
-          value={email}
-          placeholder="Email"
-          className="w-full border p-2 rounded mb-4"
-          onChange={(e) => setEmail(e.target.value)}
-        />
-
-        <div className="relative mb-4">
-          <input
-            type={showPassword ? "text" : "password"}
-            value={password}
-            placeholder="Password"
-            className="w-full border p-2 rounded"
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <span
-            className="absolute right-3 top-3 cursor-pointer text-sm"
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? "🙈" : "👁️"}
-          </span>
-        </div>
-
-        <button
-          className="w-full bg-blue-600 text-white py-2 rounded"
-          disabled={loading}
+    <>
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6 ">
+        <form
+          className="bg-white w-full max-w-md p-8 rounded-lg shadow hover:shadow-lg"
+          onSubmit={handleForm}
         >
-          {loading ? "Logging in..." : "Login"}
-        </button>
+          <h2 className="text-2xl font-bold text-center mb-2">Campus Notes</h2>
+          <p className="text-center font-bold text-2xl mb-6">
+            Login to your account
+          </p>
+          {error && (
+            <p className="bg-red-100 to-red-600 p-2 rounded mb-4 text-sm">
+              {error}
+            </p>
+          )}
 
-        <p className="text-center text-sm mt-4">
-          Don’t have an account?
-          <Link to="/register" className="text-blue-600 ml-1">
-            Register
-          </Link>
-        </p>
-      </form>
-    </div>
+          <div className="mb-4">
+            <label htmlFor="email" className="text-sm text-gray-600">
+              Email
+            </label>
+            <input
+              type="email"
+              value={email}
+              className="w-full p-2 border rounded mt-1"
+              placeholder="you@gmail.com"
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="" className="text-sm text-gray-600">
+              Password
+            </label>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                className="w-full p-2 border rounded mt-1"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <span
+                className="absolute right-3 top-3 text-sm text-blue-600 cursor-pointer"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? (
+                  <i class="fa-solid fa-eye-slash"></i>
+                ) : (
+                  <i className="fa-solid fa-eye"></i>
+                )}
+              </span>
+            </div>
+          </div>
+          <button
+            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+            disabled={loading}
+          >
+            {loading ? "Logging in... " : "Login"}
+          </button>
+          <p className="text-center text-sm mt-4">
+            Don't have an Account?{" "}
+            <Link to="/register" className="text-blue-600 font-medium">
+              Register
+            </Link>
+          </p>
+        </form>
+      </div>
+    </>
   );
 };
 
