@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+// import axios from "axios";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { toast } from "react-toastify";
-// import API from "../../utils/api";
+
+import API from "../../utils/api";
 
 const Notes = () => {
   const [notes, setNotes] = useState([]);
@@ -20,9 +21,7 @@ const Notes = () => {
   const fetchNotes = async () => {
     try {
       // const res = await axios.get("https://campus-notes-backend-six.vercel.app/api/notes");
-      const res = await axios.get(
-        "https://campus-notes-backend-six.vercel.app/api/notes",
-      );
+      const res = await API.get("/notes");
       setNotes(res.data);
     } catch (error) {
       console.error("❌ Error fetching notes:", error);
@@ -33,13 +32,10 @@ const Notes = () => {
 
   const handleBookmark = async (noteId) => {
     try {
-      await axios.post(
-        "https://campus-notes-backend-six.vercel.app/api/bookmarks/toggle",
-        {
-          userId: user.id,
-          noteId,
-        },
-      );
+      await API.post("/bookmarks/toggle", {
+        userId: user.id,
+        noteId,
+      });
       toast.success("❤️ Bookmarked successfully");
     } catch (err) {
       console.log(err.response?.data);

@@ -7,6 +7,7 @@ const Profile = () => {
   const user = JSON.parse(localStorage.getItem("campusUser"));
   const [name, setName] = useState(user?.name || "");
   const [email, setEmail] = useState(user?.email || "");
+  // const [password, setPassword] = useState(user?.password || "");
 
   const updateProfile = () => {
     const updatedUser = { ...user, name, email };
@@ -34,15 +35,22 @@ const Profile = () => {
           className="w-full border p-2 mt-4"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="enter name"
+          placeholder="enter new  Username"
         />
         <input
           type="text"
           className="w-full border p-2 mt-3"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="enter email"
+          placeholder="enter new email"
         />
+        {/* <input
+          type="text"
+          className="w-full border p-2 mt-3"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="enter new password"
+        /> */}
         <button
           className="bg-blue-600 text-white px-4 py-2 mt-4 rounded "
           onClick={updateProfile}
